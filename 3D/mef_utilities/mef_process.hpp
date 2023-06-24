@@ -102,9 +102,10 @@ void assembly(Matrix* K, Vector* b, Matrix* Ks, Vector* bs, short num_elements, 
         short index1 = M->get_element(e)->get_node1()->get_ID() - 1;
         short index2 = M->get_element(e)->get_node2()->get_ID() - 1;
         short index3 = M->get_element(e)->get_node3()->get_ID() - 1;
+        short index4 = M->get_element(e)->get_node4()->get_ID() - 1;
 
-        assembly_K(K, &Ks[e], index1, index2, index3);
-        assembly_b(b, &bs[e], index1, index2, index3);
+        assembly_K(K, &Ks[e], index1, index2, index3, index4);
+        assembly_b(b, &bs[e], index1, index2, index3, index4);
         //cout << "\t\t"; K->show(); cout << "\t\t"; b->show(); cout << "\n";
     }
 }
