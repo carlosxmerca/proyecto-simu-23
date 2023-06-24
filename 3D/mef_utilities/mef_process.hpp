@@ -1,6 +1,6 @@
-float calculate_local_area(float x1, float y1, float x2, float y2, float x3, float y3){
-    return abs((x1*y2 + x2*y3 + x3*y1) - (x1*y3 + x2*y1 + x3*y2))/2;
-}
+// float calculate_local_area(float x1, float y1, float x2, float y2, float x3, float y3){
+//  return abs((x1*y2 + x2*y3 + x3*y1) - (x1*y3 + x2*y1 + x3*y2))/2;
+//}
 
 float calculate_local_volume(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4){
     return abs( (x2-x1)*(y3-y1)*(z4-z1) + (y2-y1)*(z3-z1)*(x4-x1) + (x3-x1)*(y4-y1)*(z2-z1) - (z2-z1)*(y3-y1)*(x4-x1) - (y2-y1)*(x3-x1)*(z4-z1) - (z3-z1)*(y4-y1)*(x2-x1) )/6;
@@ -16,7 +16,6 @@ void calculate_local_A(Matrix* A, float x1, float y1, float z1, float x2, float 
     A->set(-(y2 - y1) * (z4 - z1) + (y4 - y1) * (z2-z1), 1, 0); A->set((x2 - x1) * (z4 - z1) - (x4 - x1) * (z2 - z1), 1, 1); A->set(-(x2 - x1) * (y4 - y1) + (x4 - x1) * (y2 - y1), 1, 2);
     A->set((y2 - y1) * (z3 - z1) - (y3 - y1) * (z2-z1), 2, 0); A->set(-(x2 - x1) * (z3 - z1) + (x3 - x1) * (z2 - z1), 2, 1); A->set((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1), 2, 2);
 
-    return;
 }
 
 void calculate_B(Matrix* B){
@@ -25,38 +24,38 @@ void calculate_B(Matrix* B){
     B->set(-1,2,0);  B->set(0,2,1);  B->set(0,2,2);  B->set(1,2,3);
 }
 
-// TODO: update function
 // void calculate_local_A(Matrix* A, float x1, float y1, float x2, float y2, float x3, float y3){
 //     A->set(y3-y1, 0, 0);   A->set(x1-x3, 0, 1);
 //     A->set(y1-y2, 1, 0);   A->set(x2-x1, 1, 1);
 // }
 
-// TODO: update function
 void create_local_K(Matrix* K, short element_id, Mesh* M){
-    K->set_size(3,3);
+    K->set_size(4,4);
 
     float k = M->get_problem_data(THERMAL_CONDUCTIVITY);
-    float x1 = M->get_element(element_id)->get_node1()->get_x_coordinate(), y1 = M->get_element(element_id)->get_node1()->get_y_coordinate(),
-          x2 = M->get_element(element_id)->get_node2()->get_x_coordinate(), y2 = M->get_element(element_id)->get_node2()->get_y_coordinate(),
-          x3 = M->get_element(element_id)->get_node3()->get_x_coordinate(), y3 = M->get_element(element_id)->get_node3()->get_y_coordinate();
-    float Area = calculate_local_area(x1, y1, x2, y2, x3, y3);
-    float J = calculate_local_jacobian(x1, y1, x2, y2, x3, y3);
+    float x1 = M->get_element(element_id)->get_node1()->get_x_coordinate(), y1 = M->get_element(element_id)->get_node1()->get_y_coordinate(), z1 = M->get_element(element_id)->get_node1()->get_z_coordinate(),
+          x2 = M->get_element(element_id)->get_node2()->get_x_coordinate(), y2 = M->get_element(element_id)->get_node2()->get_y_coordinate(), z2 = M->get_element(element_id)->get_node2()->get_z_coordinate(),
+          x3 = M->get_element(element_id)->get_node3()->get_x_coordinate(), y3 = M->get_element(element_id)->get_node3()->get_y_coordinate(), z3 = M->get_element(element_id)->get_node3()->get_z_coordinate(),
+          x4 = M->get_element(element_id)->get_node4()->get_x_coordinate(), y4 = M->get_element(element_id)->get_node4()->get_y_coordinate(), z4 = M->get_element(element_id)->get_node4()->get_z_coordinate();
 
-    Matrix B(2,3), A(2,2);
+    float Volume = calculate_local_volume(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+    float J = calculate_local_jacobian(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
+
+    Matrix B(3,4), A(3,3);
     calculate_B(&B);
-    calculate_local_A(&A, x1, y1, x2, y2, x3, y3);
+    calculate_local_A(&A, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
     //B.show(); A.show();
 
-    Matrix Bt(3,2), At(2,2);
-    transpose(&B,2,3,&Bt);
-    transpose(&A,2,2,&At);
+    Matrix Bt(4,3), At(3,3);
+    transpose(&B,3,4,&Bt);
+    transpose(&A,3,3,&At);
     //Bt.show(); At.show();
 
     Matrix res1, res2, res3;
     product_matrix_by_matrix(&A,&B,&res1);
     product_matrix_by_matrix(&At,&res1,&res2);
     product_matrix_by_matrix(&Bt,&res2,&res3);
-    product_scalar_by_matrix(k*Area/(J*J),&res3,3,3,K);
+    product_scalar_by_matrix(k*Volume/(J*J),&res3,4,4,K);
 
     //cout << "\t\tLocal matrix created for Element " << element_id+1 << ": "; K->show(); cout << "\n";
 }
