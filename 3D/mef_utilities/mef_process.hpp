@@ -16,11 +16,13 @@ void calculate_B(Matrix* B){
     B->set(-1,2,0);  B->set(0,2,1);  B->set(0,2,2);  B->set(1,2,3);
 }
 
+// TODO: update function
 void calculate_local_A(Matrix* A, float x1, float y1, float x2, float y2, float x3, float y3){
     A->set(y3-y1, 0, 0);   A->set(x1-x3, 0, 1);
     A->set(y1-y2, 1, 0);   A->set(x2-x1, 1, 1);
 }
 
+// TODO: update function
 void create_local_K(Matrix* K, short element_id, Mesh* M){
     K->set_size(3,3);
 
@@ -51,17 +53,19 @@ void create_local_K(Matrix* K, short element_id, Mesh* M){
 }
 
 void create_local_b(Vector* b, short element_id, Mesh* M){
-    b->set_size(3);
+    b->set_size(4);
 
     float Q = M->get_problem_data(HEAT_SOURCE);
-    float x1 = M->get_element(element_id)->get_node1()->get_x_coordinate(), y1 = M->get_element(element_id)->get_node1()->get_y_coordinate(),
-          x2 = M->get_element(element_id)->get_node2()->get_x_coordinate(), y2 = M->get_element(element_id)->get_node2()->get_y_coordinate(),
-          x3 = M->get_element(element_id)->get_node3()->get_x_coordinate(), y3 = M->get_element(element_id)->get_node3()->get_y_coordinate();
-    float J = calculate_local_jacobian(x1, y1, x2, y2, x3, y3);
+    float x1 = M->get_element(element_id)->get_node1()->get_x_coordinate(), y1 = M->get_element(element_id)->get_node1()->get_y_coordinate(), z1 = M->get_element(element_id)->get_node1()->get_z_coordinate(),
+          x2 = M->get_element(element_id)->get_node2()->get_x_coordinate(), y2 = M->get_element(element_id)->get_node2()->get_y_coordinate(), z2 = M->get_element(element_id)->get_node2()->get_z_coordinate(),
+          x3 = M->get_element(element_id)->get_node3()->get_x_coordinate(), y3 = M->get_element(element_id)->get_node3()->get_y_coordinate(), z3 = M->get_element(element_id)->get_node3()->get_z_coordinate(),
+          x4 = M->get_element(element_id)->get_node4()->get_x_coordinate(), y4 = M->get_element(element_id)->get_node4()->get_y_coordinate(), z4 = M->get_element(element_id)->get_node4()->get_z_coordinate();
+    float J = calculate_local_jacobian(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4);
 
-    b->set(Q*J/6,0);
-    b->set(Q*J/6,1);
-    b->set(Q*J/6,2);
+    b->set(Q*J/24, 0);
+    b->set(Q*J/24, 1);
+    b->set(Q*J/24, 2);
+    b->set(Q*J/24, 3);
 
     //cout << "\t\tLocal vector created for Element " << element_id+1 << ": "; b->show(); cout << "\n";
 }
