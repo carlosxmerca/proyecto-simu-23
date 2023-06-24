@@ -11,19 +11,10 @@ float calculate_local_jacobian(float x1, float y1, float z1, float x2, float y2,
 }
 
 void calculate_local_A(Matrix* A, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4){
-    float term1 = (y3 - y1) * (z4 - z1) - (y4 - y1) * (z3-z1);  
-    float term2 = -(x3 - x1) * (z4 - z1) + (x4 - x1) * (z3 - z1);  
-    float term3 = (x3 - x1) * (y4 - y1) - (x4 - x1) * (y3 - y1);
-    float term4 = -(y2 - y1) * (z4 - z1) + (y4 - y1) * (z2-z1); 
-    float term5 = (x2 - x1) * (z4 - z1) - (x4 - x1) * (z2 - z1);   
-    float term6 = -(x2 - x1) * (y4 - y1) + (x4 - x1) * (y2 - y1);
-    float term7 = (y2 - y1) * (z3 - z1) - (y3 - y1) * (z2-z1);  
-    float term8 = -(x2 - x1) * (z3 - z1) + (x3 - x1) * (z2 - z1);  
-    float term9 = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
-
-    A->set(term1, 0, 0); A->set(term2, 0, 1); A->set(term3, 0, 2);
-    A->set(term4, 1, 0); A->set(term5, 1, 1); A->set(term6, 1, 2);
-    A->set(term7, 2, 0); A->set(term8, 2, 1); A->set(term9, 2, 2);
+    
+    A->set((y3 - y1) * (z4 - z1) - (y4 - y1) * (z3-z1), 0, 0); A->set(-(x3 - x1) * (z4 - z1) + (x4 - x1) * (z3 - z1), 0, 1); A->set((x3 - x1) * (y4 - y1) - (x4 - x1) * (y3 - y1), 0, 2);
+    A->set(-(y2 - y1) * (z4 - z1) + (y4 - y1) * (z2-z1), 1, 0); A->set((x2 - x1) * (z4 - z1) - (x4 - x1) * (z2 - z1), 1, 1); A->set(-(x2 - x1) * (y4 - y1) + (x4 - x1) * (y2 - y1), 1, 2);
+    A->set((y2 - y1) * (z3 - z1) - (y3 - y1) * (z2-z1), 2, 0); A->set(-(x2 - x1) * (z3 - z1) + (x3 - x1) * (z2 - z1), 2, 1); A->set((x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1), 2, 2);
 
     return;
 }
