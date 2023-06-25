@@ -119,6 +119,7 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
     Matrix L(n,n), Y(n,n);
     float acum;
 
+    cout << "\t\tCalculating L...\n\n";
     for(int i= 0; i < n; i++){
         for(int j= 0; j < n; j++){
             if(i == j){
@@ -143,6 +144,7 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
         }
     }
 
+    cout << "\t\tCalculating Y...\n\n";
     for(int i= 0; i < n; i++){
         for(int j= 0; j < n; j++){
             if(i == j){
@@ -163,6 +165,7 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
         }
     }
 
+    cout << "\t\tCalculating X...\n\n";
     for(int i= n-1; i >= 0; i--){
         for(int j= 0; j < n; j++){
             acum = 0;
