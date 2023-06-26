@@ -1,6 +1,8 @@
 // float calculate_local_area(float x1, float y1, float x2, float y2, float x3, float y3){
 //  return abs((x1*y2 + x2*y3 + x3*y1) - (x1*y3 + x2*y1 + x3*y2))/2;
 //}
+#include <fstream>
+#include <ctime>
 
 float calculate_local_volume(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4){
     return abs( (x2-x1)*(y3-y1)*(z4-z1) + (y2-y1)*(z3-z1)*(x4-x1) + (x3-x1)*(y4-y1)*(z2-z1) - (z2-z1)*(y3-y1)*(x4-x1) - (y2-y1)*(x3-x1)*(z4-z1) - (z3-z1)*(y4-y1)*(x2-x1) )/6;
@@ -164,12 +166,15 @@ void apply_dirichlet_boundary_conditions(Matrix* K, Vector* b, Mesh* M){
 
 void solve_system(Matrix* K, Vector* b, Vector* T){
     int n = K->get_nrows();
-    
+    ofstream timesFile("time_report/solve_system.txt", ios::app);
+
     Matrix Kinv(n,n);
 
+    timesFile << "[" << getCurrentTimestamp() << "] Calculating inverse of global matrix K...\n\n";
     cout << "\tCalculating inverse of global matrix K...\n\n";
     calculate_inverse(K, n, &Kinv);
 
+    timesFile << "[" << getCurrentTimestamp() << "] Performing final calculation...\n\n";
     cout << "\tPerforming final calculation...\n\n";
     product_matrix_by_vector(&Kinv, b, n, n, T);
 }
