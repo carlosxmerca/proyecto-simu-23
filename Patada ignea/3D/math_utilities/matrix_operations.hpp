@@ -1,4 +1,13 @@
 #include <cmath>
+#include <fstream>
+#include <ctime>
+
+string getCurrentTimestamp() {
+    time_t now = time(nullptr);
+    char timestamp[80];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtime(&now));
+    return string(timestamp);
+}
 
 #include "vector.hpp"
 #include "matrix.hpp"
@@ -118,8 +127,10 @@ void calculate_inverse(Matrix* M, int n, Matrix* R){
 void calculate_inverse(Matrix* A, int n, Matrix* X){
     Matrix L(n,n), Y(n,n);
     float acum;
+    ofstream timesFile("time_report/calculate_inverse.txt", ios::app);
 
     cout << "\t\tCalculating L...\n\n";
+    timesFile << "[" << getCurrentTimestamp() << "] Calculating L...\n\n";
     for(int i= 0; i < n; i++){
         for(int j= 0; j < n; j++){
             if(i == j){
@@ -127,7 +138,8 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
                 for(int k = 0; k < j; k++){
                     acum += pow(L.get(j,k),2);
                 }
-                L.set(sqrt(A->get(j,j) - acum),j,j);
+                float rad = A->get(j,j) - acum;
+                L.set( ((rad<=0)?0.000001:sqrt(rad)) ,j,j);
             }
             else{
                 if(i > j){
@@ -145,6 +157,7 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
     }
 
     cout << "\t\tCalculating Y...\n\n";
+    timesFile << "[" << getCurrentTimestamp() << "] Calculating Y...\n\n";
     for(int i= 0; i < n; i++){
         for(int j= 0; j < n; j++){
             if(i == j){
@@ -166,6 +179,7 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
     }
 
     cout << "\t\tCalculating X...\n\n";
+    timesFile << "[" << getCurrentTimestamp() << "] Calculating X...\n\n";
     for(int i= n-1; i >= 0; i--){
         for(int j= 0; j < n; j++){
             acum = 0;
