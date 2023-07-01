@@ -2,6 +2,7 @@
 #include <fstream>
 #include <ctime>
 
+// Create a timestamp string in the format YYYY-MM-DD HH:MM:SS from the current time
 string getCurrentTimestamp() {
     time_t now = time(nullptr);
     char timestamp[80];
@@ -9,15 +10,18 @@ string getCurrentTimestamp() {
     return string(timestamp);
 }
 
+// Include the matrix class and the vector class
 #include "vector.hpp"
 #include "matrix.hpp"
 
+// Scalar product function O(n^2)
 void product_scalar_by_matrix(float scalar, Matrix* M, int n, int m, Matrix* R){
     for(int r = 0; r < n; r++)
         for(int c = 0; c < m; c++)
             R->set(scalar*M->get(r,c),r,c);
 }
 
+// Product of a matrix by a vector O(n^2)
 void product_matrix_by_vector(Matrix* M, Vector* V, int n, int m, Vector* R){
     for(int r = 0; r < n; r++){
         float acc = 0;
@@ -27,6 +31,7 @@ void product_matrix_by_vector(Matrix* M, Vector* V, int n, int m, Vector* R){
     }
 }
 
+// Product of a matrix by a matrix O(n^3)
 void product_matrix_by_matrix(Matrix* A, Matrix* B, Matrix* R){
     int n = A->get_nrows(), m = A->get_ncols(), p = B->get_nrows(), q = B->get_ncols();
     if(m == p){
@@ -38,7 +43,7 @@ void product_matrix_by_matrix(Matrix* A, Matrix* B, Matrix* R){
                 for(int i = 0; i < m; i++)
                     R->add(A->get(r,i)*B->get(i,c),r,c);
     }else{
-        cout << "Incompatibilidad de dimensiones al multiplicar matrices.\n\nAbortando...\n";
+        cout << "Incompatibility of dimensions when multiplying matrices.\n\nAborting...\n";
         exit(EXIT_FAILURE);
     }
 }
@@ -93,6 +98,7 @@ void conjugate_matrix(Matrix* M, int n, Matrix* C){
 }
 */
 
+// Transpose of a matrix O(n^2)
 void transpose(Matrix* M, int n, int m, Matrix* T){
     for(int r = 0; r < n; r++)
         for(int c = 0; c < m; c++)
@@ -123,7 +129,7 @@ void calculate_inverse(Matrix* M, int n, Matrix* R){
 }
 */
 
-// Cholensky method O(n^3)
+// Cholesky method O(n^3)
 void calculate_inverse(Matrix* A, int n, Matrix* X){
     Matrix L(n,n), Y(n,n);
     float acum;
@@ -131,6 +137,8 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
 
     cout << "\t\tCalculating L...\n\n";
     timesFile << "[" << getCurrentTimestamp() << "] Calculating L...\n\n";
+
+    // Calculating L O(1/3n^3)
     for(int i= 0; i < n; i++){
         for(int j= 0; j < n; j++){
             if(i == j){
@@ -138,8 +146,7 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
                 for(int k = 0; k < j; k++){
                     acum += pow(L.get(j,k),2);
                 }
-                float rad = A->get(j,j) - acum;
-                L.set( ((rad<=0)?0.000001:sqrt(rad)) ,j,j);
+                L.set(sqrt(A->get(j,j) - acum),j,j);
             }
             else{
                 if(i > j){
@@ -158,6 +165,8 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
 
     cout << "\t\tCalculating Y...\n\n";
     timesFile << "[" << getCurrentTimestamp() << "] Calculating Y...\n\n";
+
+    // Calculating Y O(2/3n^3)
     for(int i= 0; i < n; i++){
         for(int j= 0; j < n; j++){
             if(i == j){
@@ -180,6 +189,8 @@ void calculate_inverse(Matrix* A, int n, Matrix* X){
 
     cout << "\t\tCalculating X...\n\n";
     timesFile << "[" << getCurrentTimestamp() << "] Calculating X...\n\n";
+
+    // Calculating X O(n^3)
     for(int i= n-1; i >= 0; i--){
         for(int j= 0; j < n; j++){
             acum = 0;
