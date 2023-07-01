@@ -9,6 +9,8 @@ El comando g++ es un comando de invocación al compilador GNU c++, que se utiliz
 
 ## Uso del programa
 Para utilizar el programa, el archivo .dat debe estar en el mismo directorio en el que se encuentra el ejecutable. **Importante** : Borrar el .dat al momento de utilizar el comando. Ejemplo:
+
+
 Windows
 ```bash
 .\mef porygon-l-mesh
